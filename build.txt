@@ -1,0 +1,3 @@
+displayName = Chen's Cursed Accessories
+author = blancfaye7
+version = 0.1
