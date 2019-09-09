@@ -7,10 +7,12 @@ namespace ChensCursedAccessories
   {
     private const float regenMultiplier = 4f;
     public bool beguilingNecklace = false;
+    public bool bleedingTooth = false;
 
     public override void ResetEffects()
     {
       beguilingNecklace = false;
+      bleedingTooth = false;
     }
 
     public override void PostUpdateEquips()
