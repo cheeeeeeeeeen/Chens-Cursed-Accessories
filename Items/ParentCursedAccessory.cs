@@ -5,7 +5,9 @@ namespace ChensCursedAccessories.Items
 {
   public abstract class ParentCursedAccessory : ModItem
   {
-    private readonly string placeHolderPath = "ChensCursedAccessories/Items/placeholder";
+    private const string placeHolderTexture = "ChensCursedAccessories/Items/placeholder";
+
+    public string RealItemTexture => base.Texture;
 
     public override void SetDefaults()
     {
@@ -14,7 +16,7 @@ namespace ChensCursedAccessories.Items
       item.height = 77;
     }
 
-    public override string Texture => File.Exists(base.Texture) ? base.Texture : placeHolderPath;
+    public override string Texture => placeHolderTexture;
 
     public override void AddRecipes()
     {
