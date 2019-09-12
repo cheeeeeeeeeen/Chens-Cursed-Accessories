@@ -4,7 +4,7 @@ namespace ChensCursedAccessories.Items
 {
   public class ThornedChoker : ParentCursedAccessory
   {
-    public static float dmgIncPercentage = 1.5f;
+    public static float dmgIncPercentage = 2f;
 
     public override void SetStaticDefaults()
     {

@@ -9,6 +9,7 @@ namespace ChensCursedAccessories
   {
     public bool beguilingNecklace = false;
     public bool bleedingTooth = false;
+    public bool daringThighGarter = false;
     public bool thornedChoker = false;
     public int thornedChokerDefBonus = 0;
     public float thornedChokerReductBonus = 0f;
@@ -17,6 +18,7 @@ namespace ChensCursedAccessories
     {
       beguilingNecklace = false;
       bleedingTooth = false;
+      daringThighGarter = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
       thornedChokerReductBonus = 0f;
@@ -28,6 +30,11 @@ namespace ChensCursedAccessories
         player.lifeRegen += ModHelpers.RoundOffToWhole(player.lifeRegen * BeguilingNecklace.regenMultiplier);
       if (bleedingTooth)
         player.statDefense -= ModHelpers.RoundOffToWhole(player.statDefense * BleedingTooth.statsMultiplier);
+      if (daringThighGarter)
+      {
+        player.statLifeMax2 += ModHelpers.RoundOffToWhole(player.statLifeMax2 * DaringThighGarter.lifeMultiplier);
+        player.statManaMax2 -= ModHelpers.RoundOffToWhole(player.statManaMax2 * DaringThighGarter.manaMultiplier);
+      }
       if (thornedChoker)
       {
         thornedChokerDefBonus = player.statDefense;
@@ -57,7 +64,6 @@ namespace ChensCursedAccessories
     public override void GetWeaponKnockback(Item item, ref float knockback)
     {
       if (bleedingTooth) knockback -= (knockback * BleedingTooth.statsMultiplier);
-      knockback = 0;
     }
 
     public override void ModifyWeaponDamage(Item item, ref float add, ref float mult, ref float flat)
