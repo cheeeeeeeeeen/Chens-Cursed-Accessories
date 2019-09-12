@@ -1,18 +1,18 @@
 using Terraria;
-using Terraria.ModLoader;
 
 namespace ChensCursedAccessories.Items
 {
-  [AutoloadEquip(EquipType.Front)]
-
   public class BeguilingNecklace : ParentCursedAccessory
   {
+    public static readonly float regenMultiplier = 4f;
     private const float damageMultiplier = .95f;
     private const int regenConstant = 0;
 
     public override void SetStaticDefaults() 
     {
-      Tooltip.SetDefault("The wearer will always feel great, but saps away their energy.\n" +
+      Tooltip.SetDefault($"{ModHelpers.ToPercentage(regenMultiplier)}% increased total health regeneration\n" +
+                         $"{ModHelpers.ToPercentage(damageMultiplier)}% decreased damage\n" +
+                         "The wearer will always feel great, but their energy is drained.\n" +
                          "Artifact of the Succubus");
     }
 

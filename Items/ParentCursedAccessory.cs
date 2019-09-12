@@ -14,6 +14,7 @@ namespace ChensCursedAccessories.Items
       item.accessory = true;
       item.width = 96;
       item.height = 77;
+      item.rare = 2;
     }
 
     public override string Texture => placeHolderTexture;
