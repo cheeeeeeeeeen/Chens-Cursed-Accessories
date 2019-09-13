@@ -7,21 +7,31 @@ namespace ChensCursedAccessories
 {
   class AccessoryModPlayer : ModPlayer
   {
-    public bool beguilingNecklace = false;
-    public bool bleedingTooth = false;
-    public bool daringThighGarter = false;
-    public bool thornedChoker = false;
-    public int thornedChokerDefBonus = 0;
-    public float thornedChokerReductBonus = 0f;
+    private const int CritDmgBasis = 2;
 
-    public override void ResetEffects()
+    public bool beguilingNecklace;
+    public bool bleedingTooth;
+    public float critDmgMultiplier;
+    public bool daringThighGarter;
+    public bool thornedChoker;
+    public int thornedChokerDefBonus;
+    public float thornedChokerReductBonus;
+    public bool ringOfTemptation;
+
+    public AccessoryModPlayer() => AssignVariables();
+
+    public override void ResetEffects() => AssignVariables();
+
+    private void AssignVariables()
     {
       beguilingNecklace = false;
       bleedingTooth = false;
+      critDmgMultiplier = 1f;
       daringThighGarter = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
       thornedChokerReductBonus = 0f;
+      ringOfTemptation = false;
     }
 
     public override void PostUpdateEquips()
@@ -34,6 +44,11 @@ namespace ChensCursedAccessories
       {
         player.statLifeMax2 += ModHelpers.RoundOffToWhole(player.statLifeMax2 * DaringThighGarter.lifeMultiplier);
         player.statManaMax2 -= ModHelpers.RoundOffToWhole(player.statManaMax2 * DaringThighGarter.manaMultiplier);
+      }
+      if (ringOfTemptation)
+      {
+        float lifeLostPercentage = (player.statLifeMax2 - player.statLife) / (float)player.statLifeMax2;
+        player.statDefense += ModHelpers.RoundOffToWhole(player.statDefense * lifeLostPercentage);
       }
       if (thornedChoker)
       {
@@ -75,6 +90,16 @@ namespace ChensCursedAccessories
       }
     }
 
+    public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
+    {
+      RingOfTemptationModifyHit(ref damage, ref crit);
+    }
+
+    public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+    {
+      RingOfTemptationModifyHit(ref damage, ref crit);
+    }
+
     private void BleedingToothOnHit(int dmg)
     {
       if (bleedingTooth)
@@ -92,6 +117,22 @@ namespace ChensCursedAccessories
       {
         Dust.NewDust(player.Center, 1, 1, DustID.Blood); // Improve effects later
       }
+    }
+
+    private void RingOfTemptationModifyHit(ref int dmg, ref bool crit)
+    {
+      if (ringOfTemptation && crit)
+      {
+        critDmgMultiplier -= RingOfTemptation.critDmgReduction;
+        ComputeCriticalDamage(ref dmg, GetOriginalDamage(dmg));
+      }
+    }
+
+    private int GetOriginalDamage(int outputDamage) => outputDamage / CritDmgBasis;
+
+    private void ComputeCriticalDamage(ref int currentDmg, int baseDmg)
+    {
+      currentDmg = baseDmg + ModHelpers.RoundOffToWhole(baseDmg * critDmgMultiplier);
     }
   }
 }
