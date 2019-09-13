@@ -5,7 +5,7 @@ namespace ChensCursedAccessories.Items
 {
   public abstract class ParentCursedAccessory : ModItem
   {
-    private const string placeHolderTexture = "ChensCursedAccessories/Items/placeholder";
+    private readonly string placeHolderTexture = "ChensCursedAccessories/Items/placeholder";
 
     public string RealItemTexture => base.Texture;
 

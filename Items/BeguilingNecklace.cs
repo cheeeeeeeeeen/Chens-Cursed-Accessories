@@ -5,8 +5,8 @@ namespace ChensCursedAccessories.Items
   public class BeguilingNecklace : ParentCursedAccessory
   {
     public static readonly float regenMultiplier = 4f;
-    private const float damageMultiplier = .95f;
-    private const int regenConstant = 0;
+    private readonly float damageMultiplier = .95f;
+    private readonly int regenConstant = 0;
 
     public override void SetStaticDefaults() 
     {
