@@ -1,4 +1,5 @@
 ﻿using ChensCursedAccessories.Items;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,6 +14,7 @@ namespace ChensCursedAccessories
     public bool bleedingTooth;
     public float critDmgMultiplier;
     public bool daringThighGarter;
+    public bool earringOfDesire;
     public bool thornedChoker;
     public int thornedChokerDefBonus;
     public float thornedChokerReductBonus;
@@ -28,6 +30,7 @@ namespace ChensCursedAccessories
       bleedingTooth = false;
       critDmgMultiplier = 1f;
       daringThighGarter = false;
+      earringOfDesire = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
       thornedChokerReductBonus = 0f;
@@ -49,6 +52,7 @@ namespace ChensCursedAccessories
       {
         float lifeLostPercentage = (player.statLifeMax2 - player.statLife) / (float)player.statLifeMax2;
         player.statDefense += ModHelpers.RoundOffToWhole(player.statDefense * lifeLostPercentage);
+        player.endurance += player.endurance * (lifeLostPercentage / RingOfTemptation.percentageCapper);
       }
       if (thornedChoker)
       {
@@ -66,6 +70,15 @@ namespace ChensCursedAccessories
       }
     }
 
+    public override void PostUpdateRunSpeeds()
+    {
+      if (earringOfDesire)
+      {
+        player.runAcceleration -= player.runAcceleration * EarringOfDesire.speedReduction;
+        player.runSlowdown -= player.runSlowdown * EarringOfDesire.speedReduction;
+      }
+    }
+
     public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
     {
       BleedingToothOnHit(damage);
@@ -74,6 +87,16 @@ namespace ChensCursedAccessories
     public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
     {
       BleedingToothOnHit(damage);
+    }
+
+    public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
+    {
+      EarringOfDesireModifyHitBy(ref damage);
+    }
+
+    public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
+    {
+      EarringOfDesireModifyHitBy(ref damage);
     }
 
     public override void GetWeaponKnockback(Item item, ref float knockback)
@@ -133,6 +156,16 @@ namespace ChensCursedAccessories
     private void ComputeCriticalDamage(ref int currentDmg, int baseDmg)
     {
       currentDmg = baseDmg + ModHelpers.RoundOffToWhole(baseDmg * critDmgMultiplier);
+    }
+
+    private void EarringOfDesireModifyHitBy(ref int dmg)
+    {
+      if (earringOfDesire && Main.rand.NextFloat() < EarringOfDesire.redirectChance)
+      {
+        int previousMana = player.statMana;
+        player.statMana = Math.Max(0, player.statMana - dmg);
+        dmg = player.statMana > 0 ? 0 : dmg - previousMana;
+      }
     }
   }
 }

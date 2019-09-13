@@ -11,7 +11,7 @@ namespace ChensCursedAccessories.Items
     {
       Tooltip.SetDefault($"{ModHelpers.ToPercentage(lifeMultiplier)}% increased total health\n" +
                          $"{ModHelpers.ToPercentage(manaMultiplier)}% decreased total mana\n" +
-                         "The wearer feels proud of their physical build, eventually forgetting their magical prowess.\n" +
+                         "The wearer will feel proud of their physical build, eventually losing their thoughts completely.\n" +
                          "Artifact of the Succubus");
     }
 

@@ -5,14 +5,15 @@ namespace ChensCursedAccessories.Items
   class RingOfTemptation : ParentCursedAccessory
   {
     private readonly int regenConstant = 1;
-    public static readonly float critDmgReduction = 0.45f;
+    public static readonly float percentageCapper = 10f;
+    public static readonly float critDmgReduction = 0.75f;
 
     public override void SetStaticDefaults()
     {
       Tooltip.SetDefault("Slightly increases health regeneration\n" +
-                         "Lost health % is converted to defense\n" +
+                         "Lost health % is converted to defense and damage reduction\n" +
                          $"{ModHelpers.ToPercentage(critDmgReduction)}% decreased critical damage\n" +
-                         "This ring is said to have enslaved the minds of the beholder.\n" +
+                         "This ring is said to have enslaved the heart and mind of the beholder.\n" +
                          "Artifact of the Succubus");
     }
 
@@ -29,7 +30,6 @@ namespace ChensCursedAccessories.Items
     public override void UpdateAccessory(Player player, bool hideVisual)
     {
       player.lifeRegen += regenConstant;
-      player.meleeCrit = 100;
       player.GetModPlayer<AccessoryModPlayer>().ringOfTemptation = true;
     }
   }
