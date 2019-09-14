@@ -12,12 +12,13 @@ namespace ChensCursedAccessories
 
     public bool beguilingNecklace;
     public bool bleedingTooth;
+    public bool brokenShackles;
+    public float brokenShacklesReducBonus;
     public float critDmgMultiplier;
     public bool daringThighGarter;
     public bool earringOfDesire;
     public bool thornedChoker;
     public int thornedChokerDefBonus;
-    public float thornedChokerReductBonus;
     public bool ringOfTemptation;
 
     public AccessoryModPlayer() => AssignVariables();
@@ -28,12 +29,13 @@ namespace ChensCursedAccessories
     {
       beguilingNecklace = false;
       bleedingTooth = false;
+      brokenShackles = false;
+      brokenShacklesReducBonus = 0f;
       critDmgMultiplier = 1f;
       daringThighGarter = false;
       earringOfDesire = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
-      thornedChokerReductBonus = 0f;
       ringOfTemptation = false;
     }
 
@@ -54,20 +56,18 @@ namespace ChensCursedAccessories
         player.statDefense += ModHelpers.RoundOffToWhole(player.statDefense * lifeLostPercentage);
         player.endurance += player.endurance * (lifeLostPercentage / RingOfTemptation.percentageCapper);
       }
+      if (brokenShackles)
+        brokenShacklesReducBonus = player.endurance;
       if (thornedChoker)
-      {
         thornedChokerDefBonus = player.statDefense;
-        thornedChokerReductBonus = player.endurance;
-      }
     }
 
     public override void PostUpdateMiscEffects()
     {
-      if (thornedChoker)
-      {
-        player.statDefense = 0;
+      if (brokenShackles)
         player.endurance = 0;
-      }
+      if (thornedChoker)
+        player.statDefense = 0;
     }
 
     public override void PostUpdateRunSpeeds()
@@ -106,10 +106,11 @@ namespace ChensCursedAccessories
 
     public override void ModifyWeaponDamage(Item item, ref float add, ref float mult, ref float flat)
     {
-      if (thornedChoker && item.melee)
-      {
-        add += thornedChokerReductBonus * ThornedChoker.dmgIncPercentage;
-        flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;
+      if (item.melee) {
+        if (brokenShackles)
+          add += brokenShacklesReducBonus * BrokenShackles.dmgIncPercentage;
+        if (thornedChoker)
+          flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;
       }
     }
 

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 
 namespace ChensCursedAccessories.Items
 {
@@ -18,12 +17,5 @@ namespace ChensCursedAccessories.Items
     }
 
     public override string Texture => placeHolderTexture;
-
-    public override void AddRecipes()
-    {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-    }
   }
 }
