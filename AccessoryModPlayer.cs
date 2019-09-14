@@ -106,7 +106,7 @@ namespace ChensCursedAccessories
 
     public override void ModifyWeaponDamage(Item item, ref float add, ref float mult, ref float flat)
     {
-      if (thornedChoker)
+      if (thornedChoker && item.melee)
       {
         add += thornedChokerReductBonus * ThornedChoker.dmgIncPercentage;
         flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;

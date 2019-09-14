@@ -9,8 +9,8 @@ namespace ChensCursedAccessories.Items
     public override void SetStaticDefaults()
     {
       Tooltip.SetDefault("Reduces defense and damage reduction to 0\n" +
-                         $"{ModHelpers.ToPercentage(dmgIncPercentage)}% of depleted defense is converted to damage\n" +
-                         "The wearer will feel tremendous power, but their fate is now under the command of something else.\n" +
+                         $"{ModHelpers.ToPercentage(dmgIncPercentage)}% of depleted defense is converted to melee damage\n" +
+                         "The wearer will feel tremendous strength, but their fate will be under the command of something else.\n" +
                          "Artifact of the Devil");
     }
 
