@@ -12,5 +12,15 @@ namespace ChensCursedAccessories
     }
 
     public static float ToPercentage(float num) => num * 100;
+
+    public static float ToSeconds(int ticks) => ticks / 60f;
+
+    public static string PluralizeSecond(int ticks)
+    {
+      if (ticks == 60)
+        return "second";
+
+      return "seconds";
+    }
   }
 }

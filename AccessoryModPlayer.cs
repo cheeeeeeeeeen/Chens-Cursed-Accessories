@@ -16,12 +16,19 @@ namespace ChensCursedAccessories
     public float brokenShacklesReducBonus;
     public float critDmgMultiplier;
     public bool daringThighGarter;
+    public bool demonicHorns;
+    public int demonicHornsTick;
+    public float demonicHornsCrit;
     public bool earringOfDesire;
     public bool thornedChoker;
     public int thornedChokerDefBonus;
     public bool ringOfTemptation;
 
-    public AccessoryModPlayer() => AssignVariables();
+    public AccessoryModPlayer()
+    {
+      AssignVariables();
+      AssignDemonicHornsVariables();
+    }
 
     public override void ResetEffects() => AssignVariables();
 
@@ -33,18 +40,24 @@ namespace ChensCursedAccessories
       brokenShacklesReducBonus = 0f;
       critDmgMultiplier = 1f;
       daringThighGarter = false;
+      demonicHorns = false;
       earringOfDesire = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
       ringOfTemptation = false;
     }
 
+    public void AssignDemonicHornsVariables()
+    {
+      demonicHornsTick = 0;
+      demonicHornsCrit = 0f;
+    }
+
     public override void PostUpdateEquips()
     {
-      if (beguilingNecklace)
-        player.lifeRegen += ModHelpers.RoundOffToWhole(player.lifeRegen * BeguilingNecklace.regenMultiplier);
-      if (bleedingTooth)
-        player.statDefense -= ModHelpers.RoundOffToWhole(player.statDefense * BleedingTooth.statsMultiplier);
+      if (!demonicHorns) player.ClearBuff(mod.BuffType(DemonicHorns.buffType));
+      if (beguilingNecklace) player.lifeRegen += ModHelpers.RoundOffToWhole(player.lifeRegen * BeguilingNecklace.regenMultiplier);
+      if (bleedingTooth) player.statDefense -= ModHelpers.RoundOffToWhole(player.statDefense * BleedingTooth.statsMultiplier);
       if (daringThighGarter)
       {
         player.statLifeMax2 += ModHelpers.RoundOffToWhole(player.statLifeMax2 * DaringThighGarter.lifeMultiplier);
@@ -56,10 +69,8 @@ namespace ChensCursedAccessories
         player.statDefense += ModHelpers.RoundOffToWhole(player.statDefense * lifeLostPercentage);
         player.endurance += player.endurance * (lifeLostPercentage / RingOfTemptation.percentageCapper);
       }
-      if (brokenShackles)
-        brokenShacklesReducBonus = player.endurance;
-      if (thornedChoker)
-        thornedChokerDefBonus = player.statDefense;
+      if (brokenShackles) brokenShacklesReducBonus = player.endurance;
+      if (thornedChoker) thornedChokerDefBonus = player.statDefense;
     }
 
     public override void PostUpdateMiscEffects()
@@ -82,11 +93,13 @@ namespace ChensCursedAccessories
     public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
     {
       BleedingToothOnHit(damage);
+      if (item.melee) DemonicHornsOnHit();
     }
 
     public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
     {
       BleedingToothOnHit(damage);
+      if (proj.melee) DemonicHornsOnHit();
     }
 
     public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
@@ -104,13 +117,16 @@ namespace ChensCursedAccessories
       if (bleedingTooth) knockback -= (knockback * BleedingTooth.statsMultiplier);
     }
 
+    public override void GetWeaponCrit(Item item, ref int crit)
+    {
+      if (demonicHorns) crit += ModHelpers.RoundOffToWhole(demonicHornsCrit);
+    }
+
     public override void ModifyWeaponDamage(Item item, ref float add, ref float mult, ref float flat)
     {
       if (item.melee) {
-        if (brokenShackles)
-          add += brokenShacklesReducBonus * BrokenShackles.dmgIncPercentage;
-        if (thornedChoker)
-          flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;
+        if (brokenShackles) add += brokenShacklesReducBonus * BrokenShackles.dmgIncPercentage;
+        if (thornedChoker) flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;
       }
     }
 
@@ -124,6 +140,11 @@ namespace ChensCursedAccessories
       RingOfTemptationModifyHit(ref damage, ref crit);
     }
 
+    public override void PostUpdate()
+    {
+      if ((demonicHorns && demonicHornsTick++ >= DemonicHorns.tickReset) || !demonicHorns) AssignDemonicHornsVariables();
+    }
+
     private void BleedingToothOnHit(int dmg)
     {
       if (bleedingTooth)
@@ -132,6 +153,16 @@ namespace ChensCursedAccessories
         int healValue = ModHelpers.RoundOffToWhole(dmg * BleedingTooth.lifeStealMultiplier);
         player.statLife += healValue;
         player.HealEffect(healValue, true);
+      }
+    }
+
+    private void DemonicHornsOnHit()
+    {
+      if (demonicHorns)
+      {
+        demonicHornsCrit += DemonicHorns.incCrit;
+        demonicHornsTick = 0;
+        player.AddBuff(mod.BuffType(DemonicHorns.buffType), DemonicHorns.tickReset);
       }
     }
 
