@@ -17,22 +17,20 @@ namespace ChensCursedAccessories
     public float critDmgMultiplier;
     public bool daringThighGarter;
     public bool demonicHorns;
-    public int demonicHornsTick;
     public float demonicHornsCrit;
+    public int demonicHornsTick;
     public bool earringOfDesire;
+    public bool ringOfTemptation;
+    public bool sashOfTheEvilOne;
+    public float sashOfTheEvilOneCritDmg;
+    public int sashOfTheEvilOneTickIncrement;
+    public int sashOfTheEvilOneTickInBattle;
     public bool thornedChoker;
     public int thornedChokerDefBonus;
-    public bool ringOfTemptation;
 
-    public AccessoryModPlayer()
-    {
-      AssignVariables();
-      AssignDemonicHornsVariables();
-    }
+    public AccessoryModPlayer() => UpdateDead();
 
-    public override void ResetEffects() => AssignVariables();
-
-    private void AssignVariables()
+    public override void ResetEffects()
     {
       beguilingNecklace = false;
       bleedingTooth = false;
@@ -42,15 +40,30 @@ namespace ChensCursedAccessories
       daringThighGarter = false;
       demonicHorns = false;
       earringOfDesire = false;
+      ringOfTemptation = false;
+      sashOfTheEvilOne = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
-      ringOfTemptation = false;
+    }
+
+    public override void UpdateDead()
+    {
+      ResetEffects();
+      AssignDemonicHornsVariables();
+      AssignSashOfTheEvilOneVariables();
     }
 
     public void AssignDemonicHornsVariables()
     {
-      demonicHornsTick = 0;
       demonicHornsCrit = 0f;
+      demonicHornsTick = 0;
+    }
+
+    public void AssignSashOfTheEvilOneVariables()
+    {
+      sashOfTheEvilOneCritDmg = 0f;
+      sashOfTheEvilOneTickInBattle = SashOfTheEvilOne.inBattleDuration;
+      sashOfTheEvilOneTickIncrement = 0;
     }
 
     public override void PostUpdateEquips()
@@ -68,6 +81,7 @@ namespace ChensCursedAccessories
         float lifeLostPercentage = (player.statLifeMax2 - player.statLife) / (float)player.statLifeMax2;
         player.statDefense += ModHelpers.RoundOffToWhole(player.statDefense * lifeLostPercentage);
         player.endurance += player.endurance * (lifeLostPercentage / RingOfTemptation.percentageCapper);
+        critDmgMultiplier -= RingOfTemptation.critDmgReduction;
       }
       if (brokenShackles) brokenShacklesReducBonus = player.endurance;
       if (thornedChoker) thornedChokerDefBonus = player.statDefense;
@@ -79,6 +93,10 @@ namespace ChensCursedAccessories
         player.endurance = 0;
       if (thornedChoker)
         player.statDefense = 0;
+      if (demonicHorns)
+        player.meleeCrit = 0;
+      if (sashOfTheEvilOne)
+        critDmgMultiplier = 0f;
     }
 
     public override void PostUpdateRunSpeeds()
@@ -88,6 +106,35 @@ namespace ChensCursedAccessories
         player.runAcceleration -= player.runAcceleration * EarringOfDesire.speedReduction;
         player.runSlowdown -= player.runSlowdown * EarringOfDesire.speedReduction;
       }
+    }
+
+    public override void PostUpdate()
+    {
+      if ((demonicHorns && demonicHornsTick++ >= DemonicHorns.tickReset) || !demonicHorns) AssignDemonicHornsVariables();
+      if (sashOfTheEvilOne)
+      {
+        if (sashOfTheEvilOneTickInBattle < SashOfTheEvilOne.inBattleDuration)
+        {
+          sashOfTheEvilOneTickInBattle++;
+          if (sashOfTheEvilOneTickIncrement++ >= SashOfTheEvilOne.tickInc)
+          {
+            sashOfTheEvilOneTickIncrement = 0;
+            sashOfTheEvilOneCritDmg += SashOfTheEvilOne.incCritDmg;
+          }
+        }
+        else sashOfTheEvilOneTickIncrement = 0;
+      }
+      else AssignSashOfTheEvilOneVariables();
+    }
+
+    public override void GetWeaponCrit(Item item, ref int crit)
+    {
+      if (demonicHorns) crit += ModHelpers.RoundOffToWhole(demonicHornsCrit);
+    }
+
+    public override void GetWeaponKnockback(Item item, ref float knockback)
+    {
+      if (bleedingTooth) knockback -= (knockback * BleedingTooth.statsMultiplier);
     }
 
     public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
@@ -105,26 +152,19 @@ namespace ChensCursedAccessories
     public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
     {
       EarringOfDesireModifyHitBy(ref damage);
+      SashOfTheEvilOneModifyHitBy();
     }
 
     public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
     {
       EarringOfDesireModifyHitBy(ref damage);
-    }
-
-    public override void GetWeaponKnockback(Item item, ref float knockback)
-    {
-      if (bleedingTooth) knockback -= (knockback * BleedingTooth.statsMultiplier);
-    }
-
-    public override void GetWeaponCrit(Item item, ref int crit)
-    {
-      if (demonicHorns) crit += ModHelpers.RoundOffToWhole(demonicHornsCrit);
+      SashOfTheEvilOneModifyHitBy();
     }
 
     public override void ModifyWeaponDamage(Item item, ref float add, ref float mult, ref float flat)
     {
-      if (item.melee) {
+      if (item.melee)
+      {
         if (brokenShackles) add += brokenShacklesReducBonus * BrokenShackles.dmgIncPercentage;
         if (thornedChoker) flat += thornedChokerDefBonus * ThornedChoker.dmgIncPercentage;
       }
@@ -132,17 +172,14 @@ namespace ChensCursedAccessories
 
     public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
     {
-      RingOfTemptationModifyHit(ref damage, ref crit);
+      OverrideCriticalDamageModifyHit(ref damage, crit);
+      if (item.melee) SashOfTheEvilOneModifyHit(ref damage, crit);
     }
 
     public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
     {
-      RingOfTemptationModifyHit(ref damage, ref crit);
-    }
-
-    public override void PostUpdate()
-    {
-      if ((demonicHorns && demonicHornsTick++ >= DemonicHorns.tickReset) || !demonicHorns) AssignDemonicHornsVariables();
+      OverrideCriticalDamageModifyHit(ref damage, crit);
+      if (proj.melee) SashOfTheEvilOneModifyHit(ref damage, crit);
     }
 
     private void BleedingToothOnHit(int dmg)
@@ -156,38 +193,19 @@ namespace ChensCursedAccessories
       }
     }
 
+    private void ComputeCriticalDamage(ref int dmg, int baseDmg)
+    {
+      dmg = baseDmg + ModHelpers.RoundOffToWhole(baseDmg * critDmgMultiplier);
+    }
+
     private void DemonicHornsOnHit()
     {
       if (demonicHorns)
       {
         demonicHornsCrit += DemonicHorns.incCrit;
         demonicHornsTick = 0;
-        player.AddBuff(mod.BuffType(DemonicHorns.buffType), DemonicHorns.tickReset);
+        // player.AddBuff(mod.BuffType(DemonicHorns.buffType), DemonicHorns.tickReset);
       }
-    }
-
-    private void LifeStealEffect()
-    {
-      for (int i = 0; i < 10; i++)
-      {
-        Dust.NewDust(player.Center, 1, 1, DustID.Blood); // Improve effects later
-      }
-    }
-
-    private void RingOfTemptationModifyHit(ref int dmg, ref bool crit)
-    {
-      if (ringOfTemptation && crit)
-      {
-        critDmgMultiplier -= RingOfTemptation.critDmgReduction;
-        ComputeCriticalDamage(ref dmg, GetOriginalDamage(dmg));
-      }
-    }
-
-    private int GetOriginalDamage(int outputDamage) => outputDamage / CritDmgBasis;
-
-    private void ComputeCriticalDamage(ref int currentDmg, int baseDmg)
-    {
-      currentDmg = baseDmg + ModHelpers.RoundOffToWhole(baseDmg * critDmgMultiplier);
     }
 
     private void EarringOfDesireModifyHitBy(ref int dmg)
@@ -197,6 +215,48 @@ namespace ChensCursedAccessories
         int previousMana = player.statMana;
         player.statMana = Math.Max(0, player.statMana - dmg);
         dmg = player.statMana > 0 ? 0 : dmg - previousMana;
+      }
+    }
+
+    private int GetOriginalDamage(int outputDamage) => outputDamage / CritDmgBasis;
+
+    private void LifeStealEffect()
+    {
+      for (int i = 0; i < 10; i++)
+      {
+        Dust.NewDust(player.Center, 1, 1, DustID.Blood); // Improve effects later
+      }
+    }
+
+    private void OverrideCriticalDamageModifyHit(ref int dmg, bool crit)
+    {
+      if (ringOfTemptation && crit)
+      {
+        ComputeCriticalDamage(ref dmg, GetOriginalDamage(dmg));
+      }
+    }
+
+    private void SashOfTheEvilOneModifyHit(ref int dmg, bool crit)
+    {
+      if (sashOfTheEvilOne)
+      {
+        if (crit)
+        {
+          critDmgMultiplier += sashOfTheEvilOneCritDmg;
+          ComputeCriticalDamage(ref dmg, GetOriginalDamage(dmg));
+        }
+        sashOfTheEvilOneTickInBattle = 0;
+        // player.AddBuff(mod.BuffType(SashOfTheEvilOne.buffType), SashOfTheEvilOne.inBattleDuration);
+      }
+    }
+
+    private void SashOfTheEvilOneModifyHitBy()
+    {
+      if (sashOfTheEvilOne)
+      {
+        sashOfTheEvilOneCritDmg -= SashOfTheEvilOne.decCritDmg;
+        sashOfTheEvilOneTickInBattle = 0;
+        // player.AddBuff(mod.BuffType(SashOfTheEvilOne.buffType), SashOfTheEvilOne.inBattleDuration);
       }
     }
   }

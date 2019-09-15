@@ -31,7 +31,6 @@ namespace ChensCursedAccessories.Items
 
     public override void UpdateAccessory(Player player, bool hideVisual)
     {
-      player.meleeCrit = 0;
       player.GetModPlayer<AccessoryModPlayer>().demonicHorns = true;
     }
   }
