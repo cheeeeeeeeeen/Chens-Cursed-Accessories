@@ -1,3 +1,6 @@
 displayName = Chen's Cursed Accessories
 author = blancfaye7
-version = 0.1
+version = 0.0.1
+homepage = https://www.discord.gg/WkYnurE
+hideCode = true
+hideResources = true
