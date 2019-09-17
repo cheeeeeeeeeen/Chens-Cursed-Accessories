@@ -25,10 +25,16 @@ namespace ChensCursedAccessories
     public float sashOfTheEvilOneCritDmg;
     public int sashOfTheEvilOneTickIncrement;
     public int sashOfTheEvilOneTickInBattle;
+    public bool shadowCape;
+    public bool theNail;
+    public bool theNailHastened;
+    public int theNailTick;
     public bool thornedChoker;
     public int thornedChokerDefBonus;
 
     public AccessoryModPlayer() => UpdateDead();
+
+    // Overrides
 
     public override void ResetEffects()
     {
@@ -42,6 +48,8 @@ namespace ChensCursedAccessories
       earringOfDesire = false;
       ringOfTemptation = false;
       sashOfTheEvilOne = false;
+      shadowCape = false;
+      theNail = false;
       thornedChoker = false;
       thornedChokerDefBonus = 0;
     }
@@ -51,19 +59,7 @@ namespace ChensCursedAccessories
       ResetEffects();
       AssignDemonicHornsVariables();
       AssignSashOfTheEvilOneVariables();
-    }
-
-    public void AssignDemonicHornsVariables()
-    {
-      demonicHornsCrit = 0f;
-      demonicHornsTick = 0;
-    }
-
-    public void AssignSashOfTheEvilOneVariables()
-    {
-      sashOfTheEvilOneCritDmg = 0f;
-      sashOfTheEvilOneTickInBattle = SashOfTheEvilOne.inBattleDuration;
-      sashOfTheEvilOneTickIncrement = 0;
+      AssignTheNailVariables();
     }
 
     public override void PostUpdateEquips()
@@ -125,6 +121,7 @@ namespace ChensCursedAccessories
         else sashOfTheEvilOneTickIncrement = 0;
       }
       else AssignSashOfTheEvilOneVariables();
+      if (theNail && theNailHastened && (theNailTick++ >= TheNail.duration)) AssignTheNailVariables();
     }
 
     public override void GetWeaponCrit(Item item, ref int crit)
@@ -141,12 +138,14 @@ namespace ChensCursedAccessories
     {
       BleedingToothOnHit(damage);
       if (item.melee) DemonicHornsOnHit();
+      TheNailOnHit();
     }
 
     public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
     {
       BleedingToothOnHit(damage);
       if (proj.melee) DemonicHornsOnHit();
+      TheNailOnHit();
     }
 
     public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
@@ -180,6 +179,34 @@ namespace ChensCursedAccessories
     {
       OverrideCriticalDamageModifyHit(ref damage, crit);
       if (proj.melee) SashOfTheEvilOneModifyHit(ref damage, crit);
+    }
+
+    public override float UseTimeMultiplier(Item item)
+    {
+      if (theNail && IsAWeapon(item) && theNailHastened) return TheNail.useSpdMultiplier;
+
+      return base.UseTimeMultiplier(item);
+    }
+
+    // Private Methods
+
+    private void AssignDemonicHornsVariables()
+    {
+      demonicHornsCrit = 0f;
+      demonicHornsTick = 0;
+    }
+
+    private void AssignSashOfTheEvilOneVariables()
+    {
+      sashOfTheEvilOneCritDmg = 0f;
+      sashOfTheEvilOneTickInBattle = SashOfTheEvilOne.inBattleDuration;
+      sashOfTheEvilOneTickIncrement = 0;
+    }
+
+    private void AssignTheNailVariables(bool reverse = false)
+    {
+      theNailHastened = reverse;
+      theNailTick = 0;
     }
 
     private void BleedingToothOnHit(int dmg)
@@ -220,6 +247,8 @@ namespace ChensCursedAccessories
 
     private int GetOriginalDamage(int outputDamage) => outputDamage / CritDmgBasis;
 
+    private bool IsAWeapon(Item item) => item.melee || item.ranged || item.magic || item.thrown;
+
     private void LifeStealEffect()
     {
       for (int i = 0; i < 10; i++)
@@ -258,6 +287,11 @@ namespace ChensCursedAccessories
         sashOfTheEvilOneTickInBattle = 0;
         // player.AddBuff(mod.BuffType(SashOfTheEvilOne.buffType), SashOfTheEvilOne.inBattleDuration);
       }
+    }
+
+    private void TheNailOnHit()
+    {
+      if (theNail && Main.rand.NextFloat() < TheNail.chance) AssignTheNailVariables(true);
     }
   }
 }
