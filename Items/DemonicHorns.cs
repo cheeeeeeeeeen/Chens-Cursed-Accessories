@@ -23,11 +23,11 @@ namespace ChensCursedAccessories.Items
     {
       base.SetDefaults();
 
-      // item.width = ;
-      // item.height = ;
+      item.width = 54;
+      item.height = 24;
     }
 
-    // public override string Texture => RealItemTexture;
+    public override string Texture => RealItemTexture;
 
     public override void UpdateAccessory(Player player, bool hideVisual)
     {
