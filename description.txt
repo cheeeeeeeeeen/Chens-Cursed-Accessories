@@ -15,14 +15,20 @@ There are currently only 9 accessories:
 
 All of the accessories are only available through Cheat Sheet or HERO's Mod. They are not yet ready for actual gameplay, but players are free to test!
 
-If you want to know more information about this mod, join my discord group. The mod is currently just for fun and practice, but I can see a huge potential here. So far, not much can be said from this mod except for making accessories that both have a positive effect and a negative effect.
+There is not much information about this mod, but the mod is currently just for fun and practice. I can see a huge potential here, though. So far, not much can be said from this mod except for making accessories that both have a positive effect and a negative effect.
 
-Most of the sprites in this mod are placeholders. If you want to offer your spriting skills, then you can help me! Just join the discord group and we can discuss from there.
+Some of the sprites in this mod are placeholders. If you want to offer your spriting skills, then you can help me! If you also have suggestions, then that will be great.
+
+Join the discord group and we can discuss from there.
 
 Thank you for your time to try this mod and taking interest. Have a nice day!
 
 --------
 
 Changelog:
+
+0.1.2
+  - Add sprites to all existing accessories
+
 0.1.1
   - Initial release of the mod to the public
