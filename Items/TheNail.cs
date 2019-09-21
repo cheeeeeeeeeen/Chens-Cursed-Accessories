@@ -2,7 +2,7 @@
 
 namespace ChensCursedAccessories.Items
 {
-  class TheNail : ParentCursedAccessory
+  public class TheNail : ParentCursedAccessory
   {
     public static readonly int duration = ModHelpers.RoundOffToWhole(.3f * 60);
     public static readonly float chance = 0.05f;
