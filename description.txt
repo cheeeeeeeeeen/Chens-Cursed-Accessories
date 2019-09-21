@@ -2,15 +2,17 @@ Chen's Cursed accessories is a mod that adds accessories to the game which can i
 
 This mod is a Work in Progress, and more will be added soon!
 
-There are currently only 9 accessories:
+There are currently 11 accessories:
 - Beguiling Necklace
 - Bleeding Tooth
 - Broken Shackles
 - Daring Thigh Garter
 - Demonic Horns
 - Earring Of Desire
+- Eye of Vlad
 - Ring Of Temptation
 - Sash Of The Evil One
+- The Nail
 - Thorned Choker
 
 All of the accessories are only available through Cheat Sheet or HERO's Mod. They are not yet ready for actual gameplay, but players are free to test!
@@ -26,6 +28,10 @@ Thank you for your time to try this mod and taking interest. Have a nice day!
 --------
 
 Changelog:
+
+0.1.3
+  - Add The Nail accessory (Vampire)
+  - Add Eye of Vlad accessory (Vampire)
 
 0.1.2
   - Add sprites to all existing accessories
