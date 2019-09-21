@@ -20,6 +20,7 @@ namespace ChensCursedAccessories
     public float demonicHornsCrit;
     public int demonicHornsTick;
     public bool earringOfDesire;
+    public bool eyeOfVlad;
     public bool ringOfTemptation;
     public bool sashOfTheEvilOne;
     public float sashOfTheEvilOneCritDmg;
@@ -46,6 +47,7 @@ namespace ChensCursedAccessories
       daringThighGarter = false;
       demonicHorns = false;
       earringOfDesire = false;
+      eyeOfVlad = false;
       ringOfTemptation = false;
       sashOfTheEvilOne = false;
       shadowCape = false;
@@ -138,6 +140,7 @@ namespace ChensCursedAccessories
     {
       BleedingToothOnHit(damage);
       if (item.melee) DemonicHornsOnHit();
+      EyeOfVladOnHit(ref target);
       TheNailOnHit();
     }
 
@@ -145,6 +148,7 @@ namespace ChensCursedAccessories
     {
       BleedingToothOnHit(damage);
       if (proj.melee) DemonicHornsOnHit();
+      EyeOfVladOnHit(ref target);
       TheNailOnHit();
     }
 
@@ -242,6 +246,15 @@ namespace ChensCursedAccessories
         int previousMana = player.statMana;
         player.statMana = Math.Max(0, player.statMana - dmg);
         dmg = player.statMana > 0 ? 0 : dmg - previousMana;
+      }
+    }
+
+    private void EyeOfVladOnHit(ref NPC victim)
+    {
+      if (eyeOfVlad && Main.rand.NextFloat() < EyeOfVlad.chance)
+      {
+        int randNum = Main.rand.Next(0, EyeOfVlad.buffsID.Length);
+        victim.AddBuff(EyeOfVlad.buffsID[randNum], EyeOfVlad.duration);
       }
     }
 
