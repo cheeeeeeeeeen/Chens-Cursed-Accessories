@@ -297,6 +297,7 @@ namespace ChensCursedAccessories
       if (sashOfTheEvilOne)
       {
         sashOfTheEvilOneCritDmg -= SashOfTheEvilOne.decCritDmg;
+        sashOfTheEvilOneCritDmg = Math.Max(sashOfTheEvilOneCritDmg, 0);
         sashOfTheEvilOneTickInBattle = 0;
         // player.AddBuff(mod.BuffType(SashOfTheEvilOne.buffType), SashOfTheEvilOne.inBattleDuration);
       }

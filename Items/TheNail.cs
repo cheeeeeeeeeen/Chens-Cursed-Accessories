@@ -5,7 +5,7 @@ namespace ChensCursedAccessories.Items
   public class TheNail : ParentCursedAccessory
   {
     public static readonly int duration = ModHelpers.RoundOffToWhole(.3f * 60);
-    public static readonly float chance = 0.05f;
+    public static readonly float chance = .1f;
     public static readonly float useSpdMultiplier = 2f;
     private readonly int critDecrease = 50;
 
