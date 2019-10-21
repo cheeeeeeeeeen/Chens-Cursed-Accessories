@@ -29,6 +29,11 @@ Thank you for your time to try this mod and taking interest. Have a nice day!
 
 Changelog:
 
+0.1.4
+  - Fix Sash of the Evil One Crit Damage multiplier from going below 0%
+  - Raise The Nail proc chance
+  - Reduce the amount crit damage is depleted when damaged (Sash of the Evil One)
+
 0.1.3
   - Add The Nail accessory (Vampire)
   - Add Eye of Vlad accessory (Vampire)

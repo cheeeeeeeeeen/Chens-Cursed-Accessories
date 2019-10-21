@@ -7,7 +7,7 @@ namespace ChensCursedAccessories.Items
   public class SashOfTheEvilOne : ParentCursedAccessory
   {
     public static readonly float incCritDmg = 0.01f;
-    public static readonly float decCritDmg = 0.15f;
+    public static readonly float decCritDmg = 0.02f;
     public static readonly int tickInc = 1 * 60;
     public static readonly int inBattleDuration = 5 * 60;
     public static readonly string buffType = "DevilsPower";
